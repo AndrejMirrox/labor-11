@@ -61,44 +61,49 @@ def list_man(people):
     print(line)
 
 
-def select_man(person):
+def select_man(arr, person):
     """
     Вывод конкретных людей
     """
+    result = []
+    for employee in arr:
+        if employee.get('name', person).lower() == person.lower():
+            result.append(employee)
 
-    count = 0
-    for man in people:
-        if man.get('name', person).lower() == person.lower():
-            count += 1
-            line = '+-{}-+-{}-+-{}-+-{}-+'.format(
-                '-' * 4,
-                '-' * 30,
-                '-' * 20,
-                '-' * 12
+    # Возвратить список выбранных работников.
+    return result
+
+
+def display_man(staff):
+    if staff:
+        line = '+-{}-+-{}-+-{}-+-{}-+'.format(
+            '-' * 4,
+            '-' * 30,
+            '-' * 20,
+            '-' * 12
+        )
+        print(line)
+        print(
+            '| {:^4} | {:^30} | {:^20} | {:^12} |'.format(
+                "№",
+                "Ф.И.О.",
+                "Телефон",
+                "Год рождения"
             )
-            print(line)
-            print(
-                '| {:^4} | {:^30} | {:^20} | {:^12} |'.format(
-                    "№",
-                    "Ф.И.О.",
-                    "Телефон",
-                    "Год рождения"
-                )
-            )
-            print(line)
+        )
+        print(line)
+        for idx, worker in enumerate(staff, 1):
             print(
                 '| {:>4} | {:<30} | {:<20} | {:>12} |'.format(
-                    count,
-                    man.get('name', ''),
-                    man.get('tel', ''),
-                    str(man.get('date', 0))
+                    idx,
+                    worker.get('name', ''),
+                    worker.get('tel', ''),
+                    str(worker.get('date', 0))
                 )
             )
-            print(line)
-
-    if count == 0:
-        print("Люди с заданным именем не найдены.")
-
+        print(line)
+    else:
+        print("Список пуст")
 
 def help_man():
     print("Список команд:\n")
@@ -109,8 +114,7 @@ def help_man():
     print("exit - завершить работу с программой.")
 
 
-if __name__ == '__main__':
-    # Список работников.
+def main():
     people = []
 
     while True:
@@ -125,15 +129,19 @@ if __name__ == '__main__':
                people.sort(key=lambda item: item.get('tel', ''))
 
         elif command == 'list':
-           list_man(people)
+           display_man(people)
 
         elif command.startswith('select'):
             parts = command.split(' ', maxsplit=1)
             period = parts[1]
-            select_man(period)
+            select = select_man(people, period)
+            display_man(select)
 
         elif command == 'help':
            help_man()
 
         else:
             print(f"Неизвестная команда {command}", file=sys.stderr)
+
+if __name__ == '__main__':
+    main()
